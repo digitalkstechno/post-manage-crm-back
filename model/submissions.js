@@ -33,6 +33,14 @@ const submissionSchema = new mongoose.Schema(
       trim: true,
       default: null,
     },
+    postedToSocial: {
+      type: Boolean,
+      default: false,
+    },
+    socialPostedAt: {
+      type: Date,
+      default: null,
+    },
     submittedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Staff",

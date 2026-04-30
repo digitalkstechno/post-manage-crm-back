@@ -8,15 +8,19 @@ let {
   updateSubmission,
   deleteSubmission,
   getSubmissionStats,
+  postToSocial,
 } = require("../controller/submissions");
 
 const authMiddleware = require("../middleware/auth");
+const createUploader = require("../utils/multer");
+const upload = createUploader("images/at");
 
-router.post("/create", authMiddleware, createSubmission);
+router.post("/create", authMiddleware, upload.single("atFile"), createSubmission);
 router.get("/stats", authMiddleware, getSubmissionStats);
 router.get("/", authMiddleware, fetchAllSubmissions);
 router.get("/:id", authMiddleware, fetchSubmissionById);
 router.put("/:id", authMiddleware, updateSubmission);
+router.post("/:id/post-social", authMiddleware, postToSocial);
 router.delete("/:id", authMiddleware, deleteSubmission);
 
 module.exports = router;

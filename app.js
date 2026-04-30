@@ -12,6 +12,7 @@ var logger = require("morgan");
 var indexRouter = require("./routes/indexv1.js");
 const staffRoutes = require("./routes/staff");
 const submissionRoutes = require("./routes/submissions");
+const companyRoutes = require("./routes/company");
 
 var app = express();
 app.use(cors());
@@ -29,6 +30,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/v1/api", indexRouter);
 app.use("/api/staff", staffRoutes);
 app.use("/api/submissions", submissionRoutes);
+app.use("/api/companies", companyRoutes);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

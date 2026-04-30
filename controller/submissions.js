@@ -3,7 +3,7 @@ const Submission = require("../model/submissions");
 // Create Submission
 const createSubmission = async (req, res) => {
   try {
-    const { title, description, fileLink } = req.body;
+    const { title, description, fileLink, company } = req.body;
 
     if (!title) {
       return res
@@ -11,12 +11,16 @@ const createSubmission = async (req, res) => {
         .json({ success: false, message: "Title is required" });
     }
 
+    const atFile = req.file ? `/images/at/${req.file.filename}` : undefined;
+
     const submission = await Submission.create({
       title,
       description,
       fileLink,
+      company,
+      atFile,
       status: "PENDING",
-      submittedBy: req.user._id, // ✅ id → _id
+      submittedBy: req.user._id,
     });
 
     // ✅ Populate karke return karo
@@ -122,6 +126,29 @@ const deleteSubmission = async (req, res) => {
   }
 };
 
+// Post to Social Media
+const postToSocial = async (req, res) => {
+  try {
+    const submission = await Submission.findById(req.params.id);
+
+    if (!submission) {
+      return res.status(404).json({ success: false, message: "Submission not found" });
+    }
+
+    if (submission.status !== "APPROVED") {
+      return res.status(400).json({ success: false, message: "Only approved submissions can be posted" });
+    }
+
+    submission.postedToSocial = true;
+    submission.socialPostedAt = new Date();
+    await submission.save();
+
+    res.status(200).json({ success: true, data: submission });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // Get Stats
 const getSubmissionStats = async (req, res) => {
   try {
@@ -146,4 +173,5 @@ module.exports = {
   updateSubmission,
   deleteSubmission,
   getSubmissionStats,
+  postToSocial,
 };

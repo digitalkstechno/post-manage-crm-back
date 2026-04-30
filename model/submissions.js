@@ -16,6 +16,14 @@ const submissionSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    company: {
+      type: String,
+      trim: true,
+    },
+    atFile: {
+      type: String,
+      trim: true,
+    },
     status: {
       type: String,
       enum: ["APPROVED", "PENDING", "REJECTED"],
@@ -24,6 +32,14 @@ const submissionSchema = new mongoose.Schema(
     adminComment: {
       type: String,
       trim: true,
+      default: null,
+    },
+    postedToSocial: {
+      type: Boolean,
+      default: false,
+    },
+    socialPostedAt: {
+      type: Date,
       default: null,
     },
     submittedBy: {

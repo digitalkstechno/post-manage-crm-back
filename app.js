@@ -12,9 +12,20 @@ var logger = require("morgan");
 var indexRouter = require("./routes/indexv1.js");
 const staffRoutes = require("./routes/staff");
 const submissionRoutes = require("./routes/submissions");
+const companyRoutes = require("./routes/company");
 
 var app = express();
-app.use(cors());
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',')
+  : ['http://localhost:3000'];
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    if (process.env.NODE_ENV !== 'production') return callback(null, true);
+    callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+}));
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -29,6 +40,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/v1/api", indexRouter);
 app.use("/api/staff", staffRoutes);
 app.use("/api/submissions", submissionRoutes);
+app.use("/api/companies", companyRoutes);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

@@ -6,6 +6,7 @@ let {
   fetchAllSubmissions,
   fetchSubmissionById,
   updateSubmission,
+  resubmitSubmission,
   deleteSubmission,
   getSubmissionStats,
 } = require("../controller/submissions");
@@ -13,6 +14,7 @@ let {
 const authMiddleware = require("../middleware/auth");
 
 router.post("/create", authMiddleware, createSubmission);
+router.post("/:id/resubmit", authMiddleware, resubmitSubmission);
 router.get("/stats", authMiddleware, getSubmissionStats);
 router.get("/", authMiddleware, fetchAllSubmissions);
 router.get("/:id", authMiddleware, fetchSubmissionById);

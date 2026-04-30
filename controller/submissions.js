@@ -3,27 +3,24 @@ const Submission = require("../model/submissions");
 // Create Submission
 const createSubmission = async (req, res) => {
   try {
-    const { title, description, fileLink } = req.body;
+    const { title, description, fileLink, company, uploadAt } = req.body;
 
     if (!title) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Title is required" });
+      return res.status(400).json({ success: false, message: "Title is required" });
+    }
+
+    if (uploadAt && new Date(uploadAt) < new Date()) {
+      return res.status(400).json({ success: false, message: "Upload date cannot be in the past" });
     }
 
     const submission = await Submission.create({
-      title,
-      description,
-      fileLink,
+      title, description, fileLink, company: company || null, uploadAt: uploadAt || null,
       status: "PENDING",
-      submittedBy: req.user._id, // ✅ id → _id
+      submittedBy: req.user._id,
     });
 
-    // ✅ Populate karke return karo
-    const populated = await Submission.findById(submission._id).populate(
-      "submittedBy",
-      "fullName email",
-    );
+    const populated = await Submission.findById(submission._id)
+      .populate("submittedBy", "fullName email");
 
     res.status(201).json({ success: true, data: populated });
   } catch (error) {
@@ -73,7 +70,7 @@ const fetchSubmissionById = async (req, res) => {
 // Update Submission
 const updateSubmission = async (req, res) => {
   try {
-    const validStatuses = ["APPROVED", "PENDING", "REJECTED"];
+    const validStatuses = ["APPROVED", "PENDING", "REJECTED", "REWORK"];
 
     if (req.body.status && !validStatuses.includes(req.body.status)) {
       return res
@@ -98,6 +95,25 @@ const updateSubmission = async (req, res) => {
     }
 
     res.status(200).json({ success: true, data: submission });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Resubmit (staff rework)
+const resubmitSubmission = async (req, res) => {
+  try {
+    const submission = await Submission.findById(req.params.id);
+    if (!submission) return res.status(404).json({ success: false, message: "Submission not found" });
+    if (submission.status !== "REWORK") return res.status(400).json({ success: false, message: "Only REWORK submissions can be resubmitted" });
+
+    const updated = await Submission.findByIdAndUpdate(
+      req.params.id,
+      { fileLink: req.body.fileLink, status: "PENDING", adminComment: null },
+      { new: true }
+    ).populate("submittedBy", "fullName email");
+
+    res.status(200).json({ success: true, data: updated });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -144,6 +160,7 @@ module.exports = {
   fetchAllSubmissions,
   fetchSubmissionById,
   updateSubmission,
+  resubmitSubmission,
   deleteSubmission,
   getSubmissionStats,
 };

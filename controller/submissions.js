@@ -101,7 +101,7 @@ const updateSubmission = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
-g
+
 // Resubmit (staff rework)
 const resubmitSubmission = async (req, res) => {
   try {

@@ -5,6 +5,7 @@ const {
   fetchStaffByIdService,
   staffUpdateService,
   staffDeleteService,
+  fetchStaffDropdownService,
 } = require("../service/staff");
 
 exports.createStaff = async (req, res) => {
@@ -34,7 +35,12 @@ exports.fetchAllStaffs = async (req, res) => {
     return res.status(200).json({
       status: "Success",
       message: "Staffs fetched successfully",
-      pagination: { totalRecords: totalStaff, currentPage: page, totalPages: Math.ceil(totalStaff / limit), limit },
+      pagination: { 
+        total: totalStaff, 
+        page: page, 
+        limit: limit,
+        pages: Math.ceil(totalStaff / limit)
+      },
       data: staffsData,
     });
   } catch (error) {
@@ -75,5 +81,14 @@ exports.staffDelete = async (req, res) => {
     return res.status(200).json({ status: "Success", message: "Staff deleted successfully" });
   } catch (error) {
     return res.status(404).json({ status: "Fail", message: error.message });
+  }
+};
+
+exports.fetchStaffDropdown = async (req, res) => {
+  try {
+    const staffs = await fetchStaffDropdownService();
+    return res.status(200).json({ status: "Success", message: "Staffs fetched successfully", data: staffs });
+  } catch (error) {
+    return res.status(500).json({ status: "Fail", message: error.message });
   }
 };

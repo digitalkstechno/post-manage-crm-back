@@ -9,7 +9,9 @@ let {
   resubmitSubmission,
   deleteSubmission,
   getSubmissionStats,
+  getAdminDashboardStats,
   postToSocial,
+  getSubmissionDropdown,
 } = require("../controller/submissions");
 
 const authMiddleware = require("../middleware/auth");
@@ -19,6 +21,8 @@ const upload = createUploader("images/at");
 router.post("/create", authMiddleware, createSubmission);
 router.post("/:id/resubmit", authMiddleware, resubmitSubmission);
 router.get("/stats", authMiddleware, getSubmissionStats);
+router.get("/dashboard-stats", authMiddleware, getAdminDashboardStats);
+router.get("/dropdown", authMiddleware, getSubmissionDropdown);
 router.get("/", authMiddleware, fetchAllSubmissions);
 router.get("/:id", authMiddleware, fetchSubmissionById);
 router.put("/:id", authMiddleware, updateSubmission);

@@ -17,8 +17,9 @@ const submissionSchema = new mongoose.Schema(
       trim: true,
     },
     company: {
-      type: String,
-      trim: true,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Company",
+      required: true,
     },
     uploadAt: {
       type: Date,
@@ -45,6 +46,10 @@ const submissionSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Staff",
       required: true,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }

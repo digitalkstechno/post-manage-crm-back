@@ -6,7 +6,9 @@ const StaffSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String },
     status: { type: String, default: "active" },
-    role: { type: String, enum: ["admin", "staff"], default: "staff" },
+    role: { type: String, enum: ["admin", "hr", "staff"], default: "staff" },
+    assignedCompanies: [{ type: mongoose.Schema.Types.ObjectId, ref: "Company" }],
+    isDeleted: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
